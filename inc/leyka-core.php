@@ -142,17 +142,9 @@ class Leyka {
         }
         add_action('pre_get_posts', 'leyka_get_posts', 1);
 
-        function leyka_successful_page_widget_template($content) {
-            
-//             $theme = wp_get_theme();
-//             if($theme && $theme->template == 'giger') {
-//                 return;
-//             }
+        function leyka_success_page_widget_template($content) {
 
-            if(
-                get_the_ID() == leyka_options()->opt('success_page') ||
-                get_the_ID() == leyka_options()->opt('quittance_redirect_page')
-            ) {
+            if(is_page(leyka_options()->opt('success_page')) && leyka_options()->opt('show_success_widget_on_success')) {
 
                 ob_start();
                 include(LEYKA_PLUGIN_DIR.'templates/service/leyka-template-success-widget.php');
@@ -163,16 +155,11 @@ class Leyka {
             return $content;
 
         }
-        add_filter('the_content', 'leyka_successful_page_widget_template', 1);
+        add_filter('the_content', 'leyka_success_page_widget_template', 1);
 
-        function leyka_failed_page_widget_template($content) {
-            
-//             $theme = wp_get_theme();
-//             if($theme && $theme->template == 'giger') {
-//                 return;
-//             }
-            
-            if(get_the_ID() == leyka_options()->opt('failure_page')) {
+        function leyka_failure_page_widget_template($content) {
+
+            if(is_page(leyka_options()->opt('failure_page')) && leyka_options()->opt('show_failure_widget_on_failure')) {
 
                 ob_start();
                 include(LEYKA_PLUGIN_DIR.'templates/service/leyka-template-failure-widget.php');
@@ -183,16 +170,13 @@ class Leyka {
             return $content;
 
         }
-        add_filter('the_content', 'leyka_failed_page_widget_template', 1);
+        add_filter('the_content', 'leyka_failure_page_widget_template', 1);
         
         function reinstall_cssjs_in_giger() {
             $theme = wp_get_theme();
             if($theme && $theme->template == 'giger' && !is_singular('leyka_campaign')) {
         
-                if(get_the_ID() == leyka_options()->opt('failure_page') 
-                    || get_the_ID() == leyka_options()->opt('success_page') 
-                    || get_the_ID() == leyka_options()->opt('quittance_redirect_page') 
-                ) {
+                if(get_the_ID() == leyka_options()->opt('failure_page') || get_the_ID() == leyka_options()->opt('success_page')) {
                     
                     $leyla_template_data = leyka_get_current_template_data();
                     
@@ -230,7 +214,7 @@ class Leyka {
                 <?php
             }
 
-            add_action('wp_head', function(){
+            function leyka_template_init_include() {
                 if(is_main_query() && is_singular(Leyka_Campaign_Management::$post_type)) { // Include template init script
 
                     $campaign = new Leyka_Campaign(get_queried_object_id());
@@ -246,7 +230,8 @@ class Leyka {
                     }
 
                 }
-            });
+            }
+            add_action('wp_head', 'leyka_template_init_include');
 
         }
 
@@ -790,7 +775,7 @@ class Leyka {
         }
         
         // Revo template or success/failure widgets styles:
-        if(leyka_revo_template_displayed() || leyka_success_widget_displayed() || leyka_failure_widget_displayed() || is_page(leyka_options()->opt('quittance_redirect_page'))) {
+        if(leyka_revo_template_displayed() || leyka_success_widget_displayed() || leyka_failure_widget_displayed()) {
             wp_enqueue_style(
                 $this->_plugin_slug.'-revo-plugin-styles',
                 LEYKA_PLUGIN_BASE_URL.'assets/css/public.css',
@@ -817,7 +802,7 @@ class Leyka {
     public function enqueue_scripts() {
 
         // Revo template or success/failure widgets JS:
-        if(leyka_revo_template_displayed() || leyka_success_widget_displayed() || leyka_failure_widget_displayed() || is_page(leyka_options()->opt('quittance_redirect_page'))) {
+        if(leyka_revo_template_displayed() || leyka_success_widget_displayed() || leyka_failure_widget_displayed()) {
             wp_enqueue_script(
                 $this->_plugin_slug.'-revo-public',
                 LEYKA_PLUGIN_BASE_URL.'assets/js/public.js',
@@ -1313,7 +1298,7 @@ __('Toggled options for each payment method', 'leyka');
 __('Neo', 'leyka');
 __('An updated version of "Toggles" form template', 'leyka');
 __('Revo', 'leyka');
-__('The modern and lightweight step-by-step form template', 'leyka');
+__('A modern and lightweight step-by-step form template', 'leyka');
 __('single', 'leyka');
 __('rebill', 'leyka');
 __('correction', 'leyka');

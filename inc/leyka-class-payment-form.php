@@ -441,8 +441,9 @@ function leyka_setup_current_pm(Leyka_Payment_Method $payment_method, $currency 
 
 }
 
-function leyka_pf_get_form_id($campaign_id) {
+function leyka_pf_get_form_id($campaign_id = false) {
 
+    $campaign_id = !$campaign_id ? get_the_ID() : (int)$campaign_id;
     $campaign_suffix = '';
     
     if($campaign_id && (int)$campaign_id > 0) {
@@ -779,7 +780,7 @@ function get_leyka_payment_form_template_html($campaign = null, $template = null
 
     if($campaign->is_finished) {?>
 
-    <div id="leyka-campaign-finished"><?php echo __('The fundraising campaign has been finished. Thank you for your support!', 'leyka');?></div>
+    <div id="leyka-campaign-finished"><?php _e('Donations collection finished. Thank you for your support!', 'leyka');?></div>
 
 <?php } else {
 

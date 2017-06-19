@@ -49,28 +49,33 @@
         pName = $_form.find('.donor__textfield--name input').val(),
         pEmail = $_form.find('.donor__textfield--email input').val(),
         amount = parseInt($_form.find('.amount__figure input').val()),
-        agree = $_form.find('.donor__oferta input').prop('checked');
+        $agree = $_form.find('.donor__oferta input');
         
-        if(pName.length === 0){
+        if(pName.length === 0) {
+
             error_struct['name'] = true;
             $_form.find('.donor__textfield--name').addClass('invalid');
+
         }
 
-        if(pEmail.length === 0 || !is_email(pEmail)){
+        if(pEmail.length === 0 || !is_email(pEmail)) {
+
             error_struct['email'] = true;
             $_form.find('.donor__textfield--email').addClass('invalid');
+
         }
 
-        if(!agree){
+        if($agree.length && !$agree.prop('checked')) {
+
             error_struct['agree'] = true;
             $_form.find('.donor__oferta').addClass('invalid');
+
         }
 
-        if(!Number.isInteger(amount) || amount < amountMin || amount > amountMax){
+        if( !Number.isInteger(amount) || amount < amountMin || amount > amountMax ) {
             error_struct['amount'] = true;
-            console.log('error amount');
         }
-        
+
         return Object.keys(error_struct).length ? error_struct : false;
     }
 
@@ -81,7 +86,8 @@
             var $_form = $(this),
                 $active_step = $_form.find('.step.step--active');
 
-            if( !$active_step.hasClass('step--person') ) {
+            if( !$active_step.hasClass('step--person') ) { // Do not validate + submit if donor's data step not reached yet
+
                 if($active_step.hasClass('step--amount')) {
 
                     var $proceed_button = $_form.find('.step.step--amount .step__action--amount a');
@@ -271,15 +277,20 @@
         });
         
         $('.leyka-js-complete-donation').click(function(){
-            
             $(this).closest('.leyka-pf').leykaForm('close');
-            
         });
-	//if it's should be here
-	$('.leyka-submit-errors').on('click', function(e){
-		e.preventDefault();
-		$(this).hide();
-	});
+
+        //if it's should be here
+        $('.leyka-submit-errors').on('click', function(e){
+
+            e.preventDefault();
+
+            var $this = $(this);
+
+            $this.hide();
+            goFirstStep();
+
+        });
 
     }
 
@@ -309,15 +320,25 @@
 
     }
 
-    /* go another step */
+    function goFirstStep() {
+
+        var $_form = $(this).closest('.leyka-pf');
+
+        $_form.find('.payment-opt__radio').prop('checked', false); // Reset a chosen PM
+
+        $_form.find('.step').removeClass('step--active');
+        $_form.find('.step:first').addClass('step--active');
+        $_form.find('.leyka-pf__redirect').removeClass('leyka-pf__redirect--open');
+
+    }
+
     function goAnotherStep($_link) {
 
         var target = $_link.attr('href'),
-        $_form = $_link.parents('.leyka-pf');
+        $_form = $_link.closest('.leyka-pf');
 
         if(target == 'cards') {
-            //reset choice for payment
-            $_form.find('.payment-opt__radio').prop('checked', false);
+            $_form.find('.payment-opt__radio').prop('checked', false); // Reset a chosen PM
         }
 
         $_form.find('.step').removeClass('step--active');
@@ -384,7 +405,6 @@
             max = 0;
         }
 
-        var amountIconIndex = 1;
         var percent = 0;
         if(max) {
             percent = 100 * (val - min) / (max - min);
@@ -422,11 +442,13 @@
     }
 
     function syncCustomRangeInput() {
-        var percent = getAmountPercent($(this));
-        // console.log('Percents:', percent)
-        var leftOffset = (inputRangeWidth - 2 * inputRangeButtonRadius) * percent / 100;
+
+        var percent = getAmountPercent($(this)),
+            leftOffset = (inputRangeWidth - 2 * inputRangeButtonRadius) * percent / 100;
+
         $('.range-circle').css({'left': (leftOffset) + 'px'});
         $('.range-color-wrapper').width(leftOffset + inputRangeButtonRadius);
+
     }
 
     function setChosenAmount($_link) {
@@ -555,13 +577,6 @@
             $pf.removeClass('leyka-pf--active');
         }
     }
-
-    // function redirectForm() {
-
-        // var $form = $(this);
-        // console.log($form.serializeArray());
-
-    // }
 
     $.fn.leykaForm = function(methodOrOptions) {
         if(methods[methodOrOptions]) {

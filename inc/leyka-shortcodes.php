@@ -538,16 +538,14 @@ function leyka_inline_campaign(array $attributes = array()) {
 
                         <?php }
 
-					} else {
-					    ?>
+					} else if( !$thumb_url ) {?>
                         <div class="no-supporters">
     					    <svg class="svg-icon pic-first-step"><use xlink:href="#pic-first-step" /></svg>
-                            <div class="lets-do-first-step-text"><?php _e("Every campaign is an jorney. Let's do the first step.", 'leyka');?></div>
+                            <div class="lets-do-first-step-text"><?php _e("Every campaign is a journey. Be the one to make the first step.", 'leyka');?></div>
                         </div>
                         <?php
 					}?>
                     </div>
-
 
                     <div class="inpage-card__action">
 					<?php if($campaign->is_finished) { ?>

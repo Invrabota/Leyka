@@ -178,8 +178,8 @@ function leyka_get_default_success_page() {
             'post_type' => 'page',
             'post_status' => 'publish',
             'post_name' => 'thank-you-for-your-donation',
-            'post_title' => __('Your donation completed!', 'leyka'),
-            'post_content' => __('We heartly thank you for your help!', 'leyka'),
+            'post_title' => __('Thank you!', 'leyka'),
+            'post_content' => __('Your donation completed. We are grateful for your help.', 'leyka'),
         ));
 
         do_action('leyka_default_success_page_created', $page);
@@ -232,7 +232,7 @@ function leyka_get_default_failure_page() {
             'post_type' => 'page',
             'post_status' => 'publish',
             'post_name' => 'sorry-donation-failure',
-            'post_title' => __('Your donation failed', 'leyka'),
+            'post_title' => __('Payment failure', 'leyka'),
             'post_content' => __('We are deeply sorry, but for some technical reason we failed to receive your donation. Your money are intact. Please try again later!', 'leyka'),
         ));
 
@@ -255,6 +255,7 @@ function leyka_get_failure_page_url() {
     }
 
     return $url;
+
 }
 
 /** Get a list of donation form templates as an array. */
@@ -308,6 +309,11 @@ function leyka_get_currencies_data($currency_id = false) {
 
     return $currency_id && !empty($currencies[$currency_id]) ? $currencies[$currency_id] : $currencies;
 
+}
+
+/** @deprecated Use leyka_get_currencies_data($currency_id) instead. */
+function leyka_get_active_currencies($currency_id = false) {
+    return leyka_get_currencies_data($currency_id);
 }
 
 function leyka_get_currency_data($currency_code) {
@@ -843,7 +849,7 @@ function leyka_format_amount($amount) {
 }
 
 function leyka_validate_donor_name($name) {
-    return $name ? !preg_match('/[^\\x{0410}-\\x{044F}\w\s\-_\']/iu', $name) : true;
+    return $name ? !preg_match('/[^\\x{0410}-\\x{044F}\w\s\-_\'\.]/iu', $name) : true;
 }
 
 function leyka_validate_email($email) {
